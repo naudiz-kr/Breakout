@@ -11,11 +11,11 @@ public class LevelConfig {
     // We hardcode the default Level 1 values here for now.
     // Later, we can pass an ID to this constructor to load different layouts.
     public LevelConfig() {
-        this.rows = 5;
-        this.cols = 10;
-        this.brickWidth = 70;
-        this.brickHeight = 25;
-        this.brickGap = 5;
-        this.startY = 60;
+        this.rows = 8;
+        this.cols = 14;
+        this.brickWidth = 36;
+        this.brickHeight = 10;
+        this.brickGap = 4; //14*36 + 13*4 = 556 as the space between walls.
+        this.startY = 140;
     }
 }

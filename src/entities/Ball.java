@@ -2,28 +2,41 @@ package entities;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import core.GameField;
 
 public class Ball extends Entity {
     private double dx = 4, dy = -4;
-    private final int screenWidth, screenHeight;
 
-    public Ball(int screenWidth, int screenHeight) {
-        super(screenWidth / 2.0 - 8, screenHeight / 2.0 - 8, 16, 16);
-        this.screenWidth = screenWidth;
-        this.screenHeight = screenHeight;
+    public Ball() {
+        super (GameField.WIDTH / 2.0 - 4, 400, 8, 8 );
     }
 
-    public double getDx() { return dx; }
-    public double getDy() { return dy; }
+    public double getDx() {
+        return dx;
+    }
+    public double getDy() {
+        return dy;
+    }
 
     @Override
     public void update() {
         x += dx;
         y += dy;
 
-        // wall bounce (all 4 sides)
-        if (x <= 0 || x + width >= screenWidth) dx = -dx;
-        if (y <= 0 || y + height >= screenHeight) dy = -dy;
+        if(x < GameField.LEFT) {
+            x = GameField.LEFT;
+            dx = Math.abs(dx);
+        }
+        if(x + width > GameField.RIGHT) {
+            x = GameField.RIGHT - width;
+            dx = -Math.abs(dx);
+        }
+        if(y < GameField.TOP) {
+            y = GameField.TOP;
+            dy = Math.abs(dy);
+        }
+        /* top, both sides, no bottom, which is fail*/
+
     }
 
     // Interaction logic (bouncing off paddle/bricks) 
