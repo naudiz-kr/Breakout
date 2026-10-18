@@ -7,7 +7,7 @@ public class Paddle extends Entity {
     private static final double SPEED = 7.0;
     private boolean movingLeft, movingRight, movingUp, movingDown;
 
-    public Paddle(int screenWidth, int screenHeight) {
+    public Paddle() {
         super(GameField.WIDTH / 2.0 - 26, GameField.PADDLE_Y, 56, 12);
     }
 

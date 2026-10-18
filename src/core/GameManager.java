@@ -3,7 +3,7 @@ package core;
 import javax.swing.JPanel;
 import java.awt.*;
 
-public class GameManager {
+public class GameManager extends JPanel {
     public static final int WIDTH = GameField.WIDTH;
     public static final int HEIGHT = GameField.HEIGHT;
 
@@ -48,7 +48,7 @@ public class GameManager {
         context.input.endFrame();
     }
     @Override
-    protected void paintComponent(Graphics2D g) {
+    protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         if(current != null)

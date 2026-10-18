@@ -17,6 +17,10 @@ public class Ball extends Entity {
     public double getDy() {
         return dy;
     }
+    public void setVelocity(double dx, double dy) {
+        this.dx = dx;
+        this.dy = dy;
+    }
 
     @Override
     public void update() {

@@ -3,7 +3,7 @@ package core;
 import entities.*;
 import java.util.List;
 
-public class CollisionSystem {
+public final class CollisionSystem {
     private static final double MAX_BOUNCE_ANGLE = Math.toRadians(60);
 
     private CollisionSystem() {}

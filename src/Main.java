@@ -5,7 +5,7 @@ import javax.swing.*;
 public class Main {
     public static void main(String args[]) {
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new Jframe("BREAKOUT! EX");
+            JFrame frame = new JFrame("BREAKOUT! EX");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
             GameManager manager = new GameManager();
