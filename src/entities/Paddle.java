@@ -4,11 +4,12 @@ import core.GameField;
 import java.awt.Graphics2D;
 
 public class Paddle extends Entity {
-    private static final double SPEED = 7.0;
+    private static final double SPEED = GameField.BASE_SPEED;
+    private static final double W = 72, H = 12;
     private boolean movingLeft, movingRight, movingUp, movingDown;
 
     public Paddle() {
-        super(GameField.WIDTH / 2.0 - 20, GameField.PADDLE_Y, 56, 12);
+        super(GameField.WIDTH / 2.0 - 28, GameField.PADDLE_Y, W, H);
     }
 
     public void setMovingLeft(boolean b)  {
@@ -25,14 +26,14 @@ public class Paddle extends Entity {
     }
 
     @Override
-    public void update() {
+    public void update(double dt) {
         // Horizontal movement
-        if (movingLeft)  x -= SPEED;
-        if (movingRight) x += SPEED;
+        if (movingLeft)  x -= SPEED*dt;
+        if (movingRight) x += SPEED*dt;
         
         // Vertical movement
-        if (movingUp)    y -= SPEED*0.6;
-        if (movingDown)  y += SPEED*0.6;
+        if (movingUp)    y -= SPEED*0.6*dt;
+        if (movingDown)  y += SPEED*0.6*dt;
 
         // Horizontal bounds
         if (x < GameField.LEFT)

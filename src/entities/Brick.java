@@ -25,7 +25,7 @@ public class Brick extends Entity {
     }
 
     @Override
-    public void update() {
+    public void update(double dt) {
         // static for now
     }
 

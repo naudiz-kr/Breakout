@@ -62,7 +62,7 @@ public final class CollisionSystem {
             ball.setVelocity(ballIsLeft ? -dx : dx, ball.getDy());
         } else {
             boolean ballIsAbove = centerY(ball) < centerY(other);
-            ball.setY(ballIsAbove ? other.getY() - ball.getWidth() : other.getY() + other.getWidth());
+            ball.setY(ballIsAbove ? other.getY() - ball.getHeight() : other.getY() + other.getHeight());
             double dy = Math.abs(ball.getDy());
             ball.setVelocity(ball.getDx(), ballIsAbove ? -dy : dy);
         }
@@ -71,12 +71,12 @@ public final class CollisionSystem {
         return Math.min(a.getX() + a.getWidth(), b.getX() + b.getWidth()) - Math.max(a.getX(), b.getX());
     }
     private static double overlapY(Entity a, Entity b) {
-        return Math.min(a.getY() + a.getWidth(), b.getY() + b.getWidth()) - Math.max(a.getY(), b.getY());
+        return Math.min(a.getY() + a.getHeight(), b.getY() + b.getHeight()) - Math.max(a.getY(), b.getY());
     }
     private static double centerX(Entity e) {
         return e.getX() + e.getWidth() / 2;
     }
     private static double centerY(Entity e) {
-        return e.getY() + e.getWidth() / 2;
+        return e.getY() + e.getHeight() / 2;
     }
 }

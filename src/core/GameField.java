@@ -13,6 +13,8 @@ public final class GameField {
     public static final int PADDLE_MIN_Y = 560;
     public static final int PADDLE_MAX_Y = 700;
 
+    public static final double BASE_SPEED = 420.0; //ie 4.0
+
     public static final Color WALL = new Color(64, 64, 64);
     public static final Color PADDLE_BLUE = new Color(24, 120, 200);
 

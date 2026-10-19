@@ -40,12 +40,17 @@ public class PlayScreen implements GameState {
         paddle.setMovingUp(in.isDown(KeyEvent.VK_UP));
         paddle.setMovingDown(in.isDown(KeyEvent.VK_DOWN));
 
-        paddle.update();
-        ball.update();
+        paddle.update(dt);
 
-       Brick broken = CollisionSystem.resolve(ball, paddle, bricks);
-        /*if(broken != null)
-            //score += broken.getPoints(); */
+
+        double maxMove = Math.max(Math.abs(ball.getDx()), Math.abs(ball.getDy())) * dt;
+        int steps = Math.max(1, (int) Math.ceil(maxMove / 4.0));
+        for(int i = 0; i < steps; i++) {
+            ball.update( dt / steps);
+            Brick broken = CollisionSystem.resolve(ball, paddle, bricks);
+            //if(broken != null)
+                //score += broken.getPoints();
+        }
         bricks.removeIf(b -> !b.isAlive());
 
         if(ball.getY() > GameField.HEIGHT)

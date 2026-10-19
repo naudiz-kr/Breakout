@@ -18,7 +18,7 @@ public abstract class Entity {
     }
 
     /** Called once per frame. */
-    public abstract void update();
+    public abstract void update(double dt);
 
     /** Called once per frame from paintComponent. */
     public abstract void draw(Graphics2D g);

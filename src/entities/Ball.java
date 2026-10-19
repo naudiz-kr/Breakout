@@ -5,7 +5,8 @@ import java.awt.Graphics2D;
 import core.GameField;
 
 public class Ball extends Entity {
-    private double dx = 3, dy = -3;
+    private static final double SPEED = GameField.BASE_SPEED;
+    private double dx = SPEED / Math.sqrt(2), dy = -SPEED / Math.sqrt(2);
 
     public Ball() {
         super (GameField.WIDTH / 2.0 - 4, 400, 8, 6 );
@@ -23,9 +24,9 @@ public class Ball extends Entity {
     }
 
     @Override
-    public void update() {
-        x += dx;
-        y += dy;
+    public void update(double dt) {
+        x += dx * dt;
+        y += dy * dt;
 
         if(x < GameField.LEFT) {
             x = GameField.LEFT;
@@ -39,7 +40,8 @@ public class Ball extends Entity {
             y = GameField.TOP;
             dy = Math.abs(dy);
         }
-        /* top, both sides, no bottom, which is fail*/
+        /* top, both sides, no bottom, which is fail,
+        * and speed might cause tunneling so * scale is added*/
 
     }
 
