@@ -40,7 +40,6 @@ public class PlayScreen implements GameState {
         paddle.setMovingUp(in.isDown(KeyEvent.VK_UP));
         paddle.setMovingDown(in.isDown(KeyEvent.VK_DOWN));
 
-
         paddle.update();
         ball.update();
 

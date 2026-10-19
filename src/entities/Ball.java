@@ -5,10 +5,10 @@ import java.awt.Graphics2D;
 import core.GameField;
 
 public class Ball extends Entity {
-    private double dx = 4, dy = -4;
+    private double dx = 3, dy = -3;
 
     public Ball() {
-        super (GameField.WIDTH / 2.0 - 4, 400, 8, 8 );
+        super (GameField.WIDTH / 2.0 - 4, 400, 8, 6 );
     }
 
     public double getDx() {
@@ -49,6 +49,6 @@ public class Ball extends Entity {
     @Override
     public void draw(Graphics2D g) {
         g.setColor(Color.WHITE);
-        g.fillOval((int) x, (int) y, (int) width, (int) height);
+        g.fillRect((int) x, (int) y, (int) width, (int) height);
     }
 }

@@ -8,7 +8,7 @@ public class Paddle extends Entity {
     private boolean movingLeft, movingRight, movingUp, movingDown;
 
     public Paddle() {
-        super(GameField.WIDTH / 2.0 - 26, GameField.PADDLE_Y, 56, 12);
+        super(GameField.WIDTH / 2.0 - 28, GameField.PADDLE_Y, 56, 12);
     }
 
     public void setMovingLeft(boolean b)  {
@@ -31,12 +31,12 @@ public class Paddle extends Entity {
         if (movingRight) x += SPEED;
         
         // Vertical movement
-        if (movingUp)    y -= SPEED;
-        if (movingDown)  y += SPEED;
+        if (movingUp)    y -= SPEED*0.6;
+        if (movingDown)  y += SPEED*0.6;
 
         // Horizontal bounds
         if (x < GameField.LEFT)
-            x = 0;
+            x = GameField.LEFT;
         if (x + width > GameField.RIGHT)
             x = GameField.RIGHT - width;
         if(y < GameField.PADDLE_MIN_Y)

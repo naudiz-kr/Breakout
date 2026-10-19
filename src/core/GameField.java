@@ -9,11 +9,11 @@ public final class GameField {
     public static final int LEFT = WALL_SIDE;
     public static final int RIGHT = WIDTH - WALL_SIDE;
     public static final int TOP = WALL_TOP;
-    public static final int PADDLE_Y = 670;
-    public static final int PADDLE_MIN_Y = 660;
-    public static final int PADDLE_MAX_Y = 690;
+    public static final int PADDLE_Y = 660;
+    public static final int PADDLE_MIN_Y = 480;
+    public static final int PADDLE_MAX_Y = 700;
 
-    public static final Color WALL = new Color(210, 210, 210);
+    public static final Color WALL = new Color(64, 64, 64);
     public static final Color PADDLE_BLUE = new Color(24, 120, 200);
 
     private GameField() { }
@@ -23,10 +23,10 @@ public final class GameField {
         g.fillRect(0, 0, WIDTH, WALL_TOP);
         g.fillRect(0, 0, WALL_SIDE, HEIGHT);
         g.fillRect(RIGHT, 0, WALL_SIDE, HEIGHT);
-        g.fillRect(0, PADDLE_Y - 8, WALL_SIDE, 26);
-        g.fillRect(RIGHT, PADDLE_Y - 8, WALL_SIDE, 26);
-        g.fillRect(0, PADDLE_MIN_Y - 8, WALL_SIDE, PADDLE_MAX_Y - PADDLE_MIN_Y + 28);
-        g.fillRect(RIGHT, PADDLE_MIN_Y - 8, WALL_SIDE, PADDLE_MAX_Y - PADDLE_MIN_Y + 28);
+
         g.setColor(PADDLE_BLUE);
+        int h = PADDLE_MAX_Y - PADDLE_MIN_Y + 12;
+        g.fillRect(0, PADDLE_MIN_Y, WALL_SIDE, h);
+        g.fillRect(RIGHT, PADDLE_MIN_Y, WALL_SIDE, h);
     }
 }
