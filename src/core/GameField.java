@@ -2,7 +2,7 @@ package core;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-
+/* this entire section creates the place where the game takes place*/
 public final class GameField {
     public static final int WIDTH = 580, HEIGHT = 720;
     public static final int WALL_SIDE = 12, WALL_TOP = 24;
@@ -10,7 +10,7 @@ public final class GameField {
     public static final int RIGHT = WIDTH - WALL_SIDE;
     public static final int TOP = WALL_TOP;
     public static final int PADDLE_Y = 660;
-    public static final int PADDLE_MIN_Y = 480;
+    public static final int PADDLE_MIN_Y = 560;
     public static final int PADDLE_MAX_Y = 700;
 
     public static final Color WALL = new Color(64, 64, 64);

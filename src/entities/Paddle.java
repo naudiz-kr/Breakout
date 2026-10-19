@@ -8,7 +8,7 @@ public class Paddle extends Entity {
     private boolean movingLeft, movingRight, movingUp, movingDown;
 
     public Paddle() {
-        super(GameField.WIDTH / 2.0 - 28, GameField.PADDLE_Y, 56, 12);
+        super(GameField.WIDTH / 2.0 - 20, GameField.PADDLE_Y, 56, 12);
     }
 
     public void setMovingLeft(boolean b)  {
@@ -55,6 +55,6 @@ public class Paddle extends Entity {
     @Override
     public void draw(Graphics2D g) {
         g.setColor(GameField.PADDLE_BLUE);
-        g.fillRoundRect((int) x, (int) y, (int) width, (int) height, 6, 6);
+        g.fillRect((int) x, (int) y, (int) width, (int) height);
     }
 }
