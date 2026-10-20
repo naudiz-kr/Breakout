@@ -20,6 +20,10 @@ public class PlayScreen implements GameState {
     private final List<Brick> bricks = new ArrayList<>();
     private final List<Pickup> pickups = new ArrayList<>();
     private final List<Effect> activeEffects = new ArrayList<>();
+    private final List<Laser> lasers = new ArrayList<>();
+    private double laserSpawnTimer = 3.0;
+    private final List<VerticalLaser> vLasers = new ArrayList<>();
+    private double vLaserSpawnTimer = 5.0;
     private final Random random = new Random();
     private Level level;
     private Paddle paddle;
@@ -40,6 +44,10 @@ public class PlayScreen implements GameState {
         level.loadBricks(bricks, GameField.WIDTH);
         pickups.clear();
         activeEffects.clear();
+        lasers.clear();
+        laserSpawnTimer = 3.0;
+        vLasers.clear();
+        vLaserSpawnTimer = 5.0;
     }
 
     @Override
@@ -132,25 +140,64 @@ public class PlayScreen implements GameState {
             }
         }
 
+        // --- LASER SPAWNING LOGIC (Level 2+) ---
+        if (levelNumber >= 2) {
+            laserSpawnTimer -= dt;
+            if (laserSpawnTimer <= 0) {
+                // Pick a random Y height within the paddle's movable area
+                // We subtract 20 so the laser doesn't clip outside the bounds
+                double spawnY = GameField.PADDLE_MIN_Y + random.nextDouble() * (GameField.PADDLE_MAX_Y - GameField.PADDLE_MIN_Y - 20);
+                
+                lasers.add(new Laser(spawnY));
+                laserSpawnTimer = 2.0 + random.nextDouble() * 2.0; // Spawns every 2 to 4 seconds
+            }
+        }
+
+        // --- VERTICAL LASER SPAWNING LOGIC (Level 3+) ---
+        if (levelNumber >= 3) {
+            vLaserSpawnTimer -= dt;
+            if (vLaserSpawnTimer <= 0) {
+                // Pick a random X position within the playable walls
+                // We subtract 20 so it doesn't clip outside the right wall
+                double spawnX = GameField.LEFT + random.nextDouble() * (GameField.RIGHT - GameField.LEFT - 20);
+                
+                vLasers.add(new VerticalLaser(spawnX));
+                vLaserSpawnTimer = 3.0 + random.nextDouble() * 2.0; // Spawns every 3 to 5 seconds
+            }
+        }
+
+        // --- LASER UPDATE & COLLISION ---
+        for (int i = lasers.size() - 1; i >= 0; i--) {
+            Laser l = lasers.get(i);
+            l.update(dt);
+            
+            if (l.isFinished()) {
+                lasers.remove(i);
+            } else if (l.isActive() && l.getBounds().intersects(paddle.getBounds())) {
+                // If the paddle touches the active white laser, remove the laser and lose a life
+                lasers.remove(i);
+                loseLife();
+                break; 
+            }
+        }
+
+        // --- VERTICAL LASER UPDATE & COLLISION ---
+        for (int i = vLasers.size() - 1; i >= 0; i--) {
+            VerticalLaser vl = vLasers.get(i);
+            vl.update(dt);
+            
+            if (vl.isFinished()) {
+                vLasers.remove(i);
+            } else if (vl.isActive() && vl.getBounds().intersects(paddle.getBounds())) {
+                vLasers.remove(i);
+                loseLife();
+                break; 
+            }
+        }
+
         // --- GAME OVER / LIFE LOSS LOGIC ---
         if(ball.getY() > GameField.HEIGHT) {
-            lives--;
-            
-            if (lives <= 0) {
-                // True Game Over: Reset to Level 1 and reload everything
-                levelNumber = 1;
-                lives = 3;
-                enter(); 
-            } else {
-                // Just lost a life, but still have lives left: Keep bricks!
-                ball = new Ball();
-                paddle = new Paddle(); // Instantly resets paddle to default width
-                pickups.clear();
-                
-                // Since the paddle is new, we don't need to call e.remove(). 
-                // We just clear the list so the timers disappear from the HUD.
-                activeEffects.clear();
-            }
+            loseLife();
         }
 
         // --- LEVEL UP LOGIC ---
@@ -161,6 +208,25 @@ public class PlayScreen implements GameState {
             }
             lives = 3; // Give lives back on level up
             enter();   // Load the next level
+        }
+    }
+
+        private void loseLife() {
+        lives--;
+        
+        if (lives <= 0) {
+            // True Game Over: Reset to Level 1 and reload everything
+            levelNumber = 1;
+            lives = 3;
+            enter(); 
+        } else {
+            // Just lost a life, but still have lives left: Keep bricks!
+            ball = new Ball();
+            paddle = new Paddle(); 
+            pickups.clear();
+            lasers.clear(); // Clear lasers so you don't instantly die again
+            vLasers.clear();
+            activeEffects.clear();
         }
     }
 
@@ -176,6 +242,12 @@ public class PlayScreen implements GameState {
         
         for(Pickup p : pickups)
             p.draw(g);
+            
+        for(Laser l : lasers)
+            l.draw(g);
+            
+        for(VerticalLaser vl : vLasers)
+            vl.draw(g);
             
         paddle.draw(g);
         ball.draw(g);
