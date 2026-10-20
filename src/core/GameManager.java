@@ -51,7 +51,18 @@ public class GameManager extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
+
+        // Calculate the center of the maximized window
+        int offsetX = (getWidth() - WIDTH) / 2;
+        int offsetY = (getHeight() - HEIGHT) / 2;
+
+        // Shift the graphics context so the game draws in the center and not left end
+        g2.translate(offsetX, offsetY);
+
         if(current != null)
             current.render(g2);
+
+        // Reset translation 
+        g2.translate(-offsetX, -offsetY);
     }
 }

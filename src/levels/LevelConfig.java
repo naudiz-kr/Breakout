@@ -8,14 +8,25 @@ public class LevelConfig {
     public int brickGap;
     public int startY;
 
-    // We hardcode the default Level 1 values here for now.
-    // Later, we can pass an ID to this constructor to load different layouts.
-    public LevelConfig() {
-        this.rows = 8;
-        this.cols = 14;
-        this.brickWidth = 36;
-        this.brickHeight = 10;
-        this.brickGap = 4; //14*36 + 13*4 = 556 as the space between walls.
-        this.startY = 140;
+    public LevelConfig(int levelNumber) {
+        // Standard default grid settings (16 columns * 40px = 640px + gaps = ~700px)
+        this.cols = 16;
+        this.brickWidth = 40;
+        this.brickHeight = 15;
+        this.brickGap = 4;
+        this.startY = 120;
+
+        // Level 1: 3 layers of bricks (Pure skill, no drops)
+        if (levelNumber == 1) {
+            this.rows = 3; 
+        } 
+        // Level 2: 5 layers of bricks (Buffs + Enemies)
+        else if (levelNumber == 2) {
+            this.rows = 5;
+        } 
+        // Level 3: 8 layers of bricks (Buffs + Debuffs + Enemies)
+        else if (levelNumber >= 3) {
+            this.rows = 8;
+        }
     }
 }

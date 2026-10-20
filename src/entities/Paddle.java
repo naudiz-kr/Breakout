@@ -5,11 +5,13 @@ import java.awt.Graphics2D;
 
 public class Paddle extends Entity {
     private static final double SPEED = GameField.BASE_SPEED;
-    private static final double W = 72, H = 12;
+    // Base width is 2 bricks (2 * 70 = 140)
+    private static final double W = 140, H = 12; 
     private boolean movingLeft, movingRight, movingUp, movingDown;
 
     public Paddle() {
-        super(GameField.WIDTH / 2.0 - 28, GameField.PADDLE_Y, W, H);
+        // Center the paddle based on the width
+        super(GameField.WIDTH / 2.0 - (W / 2.0), GameField.PADDLE_Y, W, H);
     }
 
     public void setMovingLeft(boolean b)  {
@@ -23,6 +25,20 @@ public class Paddle extends Entity {
     }
     public void setMovingDown(boolean b) {
         movingDown = b;
+    }
+
+    /**
+     * Overrides the default width setter to expand/contract from the center.
+     * This prevents the paddle from growing only to the right.
+     */
+    @Override
+    public void setWidth(double newWidth) {
+        // Enforce bounds: Min = 1 brick (70), Max = 4 bricks (280)
+        double clampedWidth = Math.max(70, Math.min(newWidth, 280));
+        
+        double centerX = this.x + (this.width / 2.0);
+        this.width = clampedWidth;
+        this.x = centerX - (this.width / 2.0);
     }
 
     @Override

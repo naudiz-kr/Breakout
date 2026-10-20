@@ -16,9 +16,8 @@ public class Level {
     private static final int[] PAIR_POINTS = {7, 5, 3, 1}; //points per brick
     private final LevelConfig config;
 
-    public Level() {
-        // Instantiates the default Level 1 config. Will need to be updated with more levels.
-        this.config = new LevelConfig();
+    public Level(int levelNumber) {
+        this.config = new LevelConfig(levelNumber);
     }
 
     /**
@@ -31,7 +30,8 @@ public class Level {
         int startX = (screenWidth - (config.cols * config.brickWidth + (config.cols - 1) * config.brickGap)) / 2;
 
         for (int r = 0; r < config.rows; r++) {
-            int pair = r/2; //two rows per colour
+            // Modulo ensures we don't crash if the level has more than 8 rows
+            int pair = (r / 2) % PAIR_COLORS.length; 
             for (int c = 0; c < config.cols; c++) {
                 double x = startX + c * (config.brickWidth + config.brickGap);
                 double y = config.startY + r * (config.brickHeight + config.brickGap);
