@@ -1,7 +1,6 @@
 package entities;
 
 import effects.Effect;
-import java.awt.Color;
 import java.awt.Graphics2D;
 
 public class Pickup extends Entity {
@@ -33,19 +32,9 @@ public class Pickup extends Entity {
 
     @Override
     public void draw(Graphics2D g) {
-        // Placeholder visual: Green for buffs, Red for debuffs
-        // (Keerthana can replace this with an image later)
-        if (effect.getName().toLowerCase().contains("shrink") || 
-            effect.getName().toLowerCase().contains("debuff")) {
-            g.setColor(Color.RED);
-        } else {
-            g.setColor(Color.GREEN);
-        }
-        
-        g.fillRect((int) x, (int) y, (int) width, (int) height);
-        
-        // Draw a white border 
-        g.setColor(Color.WHITE);
-        g.drawRect((int) x, (int) y, (int) width, (int) height);
+        boolean debuff = effect.getName().toLowerCase().contains("shrink")
+                || effect.getName().toLowerCase().contains("debuff");
+        g.drawImage(debuff ? SpriteFactory.DEBUFF_PICKUP : SpriteFactory.BUFF_PICKUP,
+                (int) x, (int) y, (int) width, (int) height, null);
     }
 }
