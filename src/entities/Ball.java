@@ -1,8 +1,9 @@
 package entities;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import core.GameField;
+import audio.AudioManager;
+import audio.SoundId;
 
 public class Ball extends Entity {
     private static final double SPEED = GameField.BASE_SPEED;
@@ -31,14 +32,17 @@ public class Ball extends Entity {
         if(x < GameField.LEFT) {
             x = GameField.LEFT;
             dx = Math.abs(dx);
+            AudioManager.play(SoundId.WALL_BOUNCE);
         }
         if(x + width > GameField.RIGHT) {
             x = GameField.RIGHT - width;
             dx = -Math.abs(dx);
+            AudioManager.play(SoundId.WALL_BOUNCE);
         }
         if(y < GameField.TOP) {
             y = GameField.TOP;
             dy = Math.abs(dy);
+            AudioManager.play(SoundId.WALL_BOUNCE);
         }
         /* top, both sides, no bottom, which is fail,
         * and speed might cause tunneling so * scale is added*/
@@ -50,7 +54,9 @@ public class Ball extends Entity {
 
     @Override
     public void draw(Graphics2D g) {
-        g.setColor(Color.WHITE);
-        g.fillRect((int) x, (int) y, (int) width, (int) height);
+        int spriteSize = (int) Math.ceil(Math.max(width, height) + 4);
+        int spriteX = (int) Math.round(x + (width - spriteSize) / 2);
+        int spriteY = (int) Math.round(y + (height - spriteSize) / 2);
+        g.drawImage(SpriteFactory.BALL, spriteX, spriteY, spriteSize, spriteSize, null);
     }
 }

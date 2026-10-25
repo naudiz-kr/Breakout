@@ -1,5 +1,7 @@
 package screens;
 
+import audio.AudioManager;
+import audio.SoundId;
 import core.*;
 import entities.*;
 import effects.Effect;
@@ -30,6 +32,7 @@ public class PlayScreen implements GameState {
     private Ball ball;
     private int lives = 3;
     private int levelNumber = 1;
+    private boolean resumingFromPause;
 
     public PlayScreen(GameContext cntx, int startingLevel) {
         this.cntx = cntx;
@@ -38,6 +41,10 @@ public class PlayScreen implements GameState {
 
     @Override
     public void enter() {
+        if (resumingFromPause) {
+            resumingFromPause = false;
+            return;
+        }
         level = new Level(levelNumber);
         paddle = new Paddle();
         ball = new Ball();
@@ -56,6 +63,10 @@ public class PlayScreen implements GameState {
     @Override
     public void update(double dt) {
         var in = cntx.input;
+        if (in.wasPressed(KeyEvent.VK_P) || in.wasPressed(KeyEvent.VK_ESCAPE)) {
+            cntx.changeState(new PauseScreen(cntx, this));
+            return;
+        }
         paddle.setMovingLeft(in.isDown(KeyEvent.VK_LEFT));
         paddle.setMovingRight(in.isDown(KeyEvent.VK_RIGHT));
         paddle.setMovingUp(in.isDown(KeyEvent.VK_UP));
@@ -122,6 +133,7 @@ public class PlayScreen implements GameState {
                     activeEffects.add(newEffect);
                 }
                 
+                AudioManager.play(SoundId.PICKUP);
                 pickups.remove(i);
             }
             // Remove if off-screen
@@ -211,7 +223,13 @@ public class PlayScreen implements GameState {
         }
     }
 
-        private void loseLife() {
+    void resume() {
+        resumingFromPause = true;
+        cntx.changeState(this);
+    }
+
+    private void loseLife() {
+        AudioManager.play(SoundId.LIFE_LOST);
         lives--;
         
         if (lives <= 0) {

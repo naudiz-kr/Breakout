@@ -1,5 +1,5 @@
 import core.GameManager;
-import screens.PlayScreen;
+import screens.LoadingScreen;
 import javax.swing.*;
 
 public class Main {
@@ -19,7 +19,7 @@ public class Main {
             frame.setResizable(true);
             frame.setVisible(true);
 
-            manager.changeState(new screens.MainMenuScreen(manager.getContext()));
+            manager.changeState(new LoadingScreen(manager.getContext()));
             manager.start();
         });
     }

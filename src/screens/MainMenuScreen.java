@@ -38,22 +38,28 @@ public class MainMenuScreen implements GameState {
 
     @Override
     public void render(Graphics2D g) {
-        // Fill background
-        g.setColor(Color.BLACK);
-        g.fillRect(0, 0, GameField.WIDTH, GameField.HEIGHT);
+        UI.background(g, GameField.WIDTH, GameField.HEIGHT);
+        int centerX = GameField.WIDTH / 2;
+        UI.title(g, "BREAKOUT", centerX, 200);
 
-        // Draw Title
+        int panelWidth = 400;
+        int panelHeight = 260;
+        int panelX = centerX - panelWidth / 2;
+        int panelY = 280;
+        UI.panel(g, panelX, panelY, panelWidth, panelHeight);
+
+        g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 21));
         g.setColor(Color.WHITE);
-        g.setFont(new Font("Arial", Font.BOLD, 40));
-        g.drawString("BREAKOUT", GameField.WIDTH / 2 - 110, 200);
+        UI.centered(g, "SELECT A LEVEL", centerX, panelY + 48);
+        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 19));
+        g.setColor(UI.ACCENT);
+        UI.centered(g, "1   Level 1", centerX, panelY + 100);
+        UI.centered(g, "2   Level 2", centerX, panelY + 150);
+        UI.centered(g, "3   Level 3", centerX, panelY + 200);
 
-        // Draw Instructions
-        g.setFont(new Font("Arial", Font.PLAIN, 24));
-        g.drawString("Select Level to Start:", GameField.WIDTH / 2 - 120, 350);
-        
-        g.setColor(Color.CYAN);
-        g.drawString("Press 1 - Level 1", GameField.WIDTH / 2 - 100, 420);
-        g.drawString("Press 2 - Level 2", GameField.WIDTH / 2 - 100, 470);
-        g.drawString("Press 3 - Level 3", GameField.WIDTH / 2 - 100, 520);
+        g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
+        g.setColor(UI.MUTED);
+        UI.centered(g, "Arrow keys move the paddle  |  P or Esc pauses",
+                centerX, GameField.HEIGHT - 38);
     }
 }

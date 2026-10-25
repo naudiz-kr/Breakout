@@ -71,7 +71,6 @@ public class Paddle extends Entity {
 
     @Override
     public void draw(Graphics2D g) {
-        g.setColor(GameField.PADDLE_BLUE);
-        g.fillRect((int) x, (int) y, (int) width, (int) height);
+        g.drawImage(SpriteFactory.PADDLE, (int) x, (int) y, (int) width, (int) height, null);
     }
 }

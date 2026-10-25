@@ -1,5 +1,7 @@
 package core;
 
+import audio.AudioManager;
+import audio.SoundId;
 import entities.*;
 import java.util.List;
 
@@ -16,6 +18,7 @@ public final class CollisionSystem {
         double ox = overlapX(ball, paddle);
         double oy = overlapY(ball, paddle);
         if (ox <= 0 || oy <= 0) return;
+        AudioManager.play(SoundId.PADDLE_BOUNCE);
 
         boolean hitFromTop = oy <= ox && centerY(ball) < centerY(paddle);
 
@@ -52,6 +55,7 @@ public final class CollisionSystem {
             return null;
         reflect(ball, best, overlapX(ball, best), overlapY(ball, best));
         best.hit();
+        AudioManager.play(SoundId.BRICK_BREAK);
         return best;
     }
     private static void reflect(Ball ball, Entity other, double ox, double oy) {
