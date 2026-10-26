@@ -29,6 +29,9 @@ bin/
 ### Mac OS ###
 .DS_Store
 *.class
+.idea
+lib
+out
 
 
 # Database
