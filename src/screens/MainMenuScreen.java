@@ -33,6 +33,8 @@ public class MainMenuScreen implements GameState {
             cntx.changeState(new PlayScreen(cntx, 2));
         } else if (in.wasPressed(KeyEvent.VK_3)) {
             cntx.changeState(new PlayScreen(cntx, 3));
+        } else if (in.wasPressed(KeyEvent.VK_L)) {
+        cntx.changeState(new LeaderboardScreen(cntx));
         }
     }
 
@@ -40,26 +42,37 @@ public class MainMenuScreen implements GameState {
     public void render(Graphics2D g) {
         UI.background(g, GameField.WIDTH, GameField.HEIGHT);
         int centerX = GameField.WIDTH / 2;
-        UI.title(g, "BREAKOUT", centerX, 200);
+        UI.title(g, "BREAKOUT", centerX, 170);
 
         int panelWidth = 400;
-        int panelHeight = 260;
         int panelX = centerX - panelWidth / 2;
-        int panelY = 280;
-        UI.panel(g, panelX, panelY, panelWidth, panelHeight);
+        int panelY = 220;
+        UI.panel(g, panelX, panelY, panelWidth, 260);
 
         g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 21));
         g.setColor(Color.WHITE);
-        UI.centered(g, "SELECT A LEVEL", centerX, panelY + 48);
+        UI.centered(g, "SELECT A LEVEL", centerX, panelY + 45);
         g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 19));
         g.setColor(UI.ACCENT);
-        UI.centered(g, "1   Level 1", centerX, panelY + 100);
-        UI.centered(g, "2   Level 2", centerX, panelY + 150);
-        UI.centered(g, "3   Level 3", centerX, panelY + 200);
+        UI.centered(g, "1   Level 1", centerX, panelY + 95);
+        UI.centered(g, "2   Level 2", centerX, panelY + 140);
+        UI.centered(g, "3   Level 3", centerX, panelY + 185);
+        UI.centered(g, "L   Leaderboard", centerX, panelY + 230);
 
+        int legX = centerX - 300, legY = 500;
+        UI.panel(g, legX, legY, 600, 190);
+        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+        g.setColor(Color.WHITE);
+        UI.centered(g, "CONTROLS", centerX, legY + 35);
+        String[] keys = {
+                "MENU:   1 / 2 / 3 - start level   |   L - leaderboard",
+                "GAME:   Arrow keys - move paddle   |   P / Esc - pause",
+                "PAUSED:   P / Esc / Enter - resume   |   S - save & quit   |   M - menu",
+                "RESULT:   R - retry   |   N - next level   |   S - input score   |   M - menu"
+        };
         g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
         g.setColor(UI.MUTED);
-        UI.centered(g, "Arrow keys move the paddle  |  P or Esc pauses",
-                centerX, GameField.HEIGHT - 38);
+        for (int i = 0; i < keys.length; i++)
+            g.drawString(keys[i], legX + 30, legY + 70 + i * 30);
     }
 }

@@ -33,6 +33,11 @@ public class PauseScreen implements GameState {
             pausedGame.resume();
         } else if (context.input.wasPressed(KeyEvent.VK_M)) {
             context.changeState(new StartScreen(context));
+        } else if (context.input.wasPressed(KeyEvent.VK_S) && pausedGame.getScore() > 0) {
+            context.changeState(new NameEntryScreen(context,
+                    pausedGame.getLevelNumber(), pausedGame.getScore(),
+                    () -> context.changeState(new StartScreen(context)),
+                    () -> context.changeState(this)));
         }
     }
 
@@ -46,7 +51,7 @@ public class PauseScreen implements GameState {
         overlay.setComposite(AlphaComposite.SrcOver);
 
         int panelWidth = 380;
-        int panelHeight = 250;
+        int panelHeight = 290;
         int panelX = (GameField.WIDTH - panelWidth) / 2;
         int panelY = (GameField.HEIGHT - panelHeight) / 2;
         UI.panel(overlay, panelX, panelY, panelWidth, panelHeight);
@@ -57,6 +62,8 @@ public class PauseScreen implements GameState {
         overlay.setColor(Color.WHITE);
         UI.centered(overlay, "P / Esc / Enter  -  Resume", centerX, panelY + 145);
         UI.centered(overlay, "M  -  Return to main menu", centerX, panelY + 185);
+        overlay.setColor(pausedGame.getScore() > 0 ? Color.WHITE : UI.MUTED);
+        UI.centered(overlay, "S  -  Save & quit to menu", centerX, panelY + 225);
         overlay.dispose();
     }
 }

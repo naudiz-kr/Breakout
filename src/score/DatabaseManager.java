@@ -1,4 +1,4 @@
-package persistence;
+package score;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -27,11 +27,13 @@ public class DatabaseManager {
      */
     private static void createTableIfNotExists(Connection conn) {
         // SQL statement to create the table
-        String sql = "CREATE TABLE IF NOT EXISTS highscores (" +
-                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                     "score INTEGER NOT NULL," +
-                     "date TEXT NOT NULL" +
-                     ");";
+        String sql = "CREATE TABLE IF NOT EXISTS level_scores (" +
+                "name TEXT NOT NULL COLLATE NOCASE," +
+                "level INTEGER NOT NULL," +
+                "score INTEGER NOT NULL," +
+                "date TEXT NOT NULL," +
+                "PRIMARY KEY (name, level)" +
+                ");";
                      
         try (Statement stmt = conn.createStatement()) {
             stmt.execute(sql);

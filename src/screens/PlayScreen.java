@@ -8,9 +8,8 @@ import effects.Effect;
 import effects.buffs.WidePaddleEffect;
 import effects.debuffs.ShrinkPaddleEffect;
 import levels.Level;
-import persistence.ScoreRepository;
-import persistence.ScoreEntry;
-import persistence.SqliteScoreRepository;
+import score.ScoreRepository;
+import score.SqliteScoreRepository;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -36,7 +35,8 @@ public class PlayScreen implements GameState {
     private int lives = 3;
     private int levelNumber = 1;
     private boolean resumingFromPause;
-    
+    private boolean finished;
+
     // --- SCORING FIELDS ---
     private int score = 0;
     private int highScore = 0;
@@ -45,10 +45,10 @@ public class PlayScreen implements GameState {
     public PlayScreen(GameContext cntx, int startingLevel) {
         this.cntx = cntx;
         this.levelNumber = startingLevel;
-        
+
         // Initialize database and fetch current high score
         this.scoreRepo = new SqliteScoreRepository();
-        this.highScore = scoreRepo.getHighScore();
+        this.highScore = scoreRepo.getBestForLevel(startingLevel);
     }
 
     @Override
@@ -74,6 +74,7 @@ public class PlayScreen implements GameState {
 
     @Override
     public void update(double dt) {
+        if (finished) return;
         var in = cntx.input;
         if (in.wasPressed(KeyEvent.VK_P) || in.wasPressed(KeyEvent.VK_ESCAPE)) {
             cntx.changeState(new PauseScreen(cntx, this));
@@ -92,23 +93,23 @@ public class PlayScreen implements GameState {
         for(int i = 0; i < steps; i++) {
             ball.update( dt / steps);
             Brick broken = CollisionSystem.resolve(ball, paddle, bricks);
-            
+
             if(broken != null) {
                 // Add points for the broken brick
                 score += broken.getPoints();
-                
+
                 Effect drop = null;
-                
+
                 if (levelNumber == 2) {
                     // Level 2: 20% chance for a buff
                     if (random.nextDouble() < 0.20) {
-                        drop = new WidePaddleEffect(70); 
+                        drop = new WidePaddleEffect(70);
                     }
                 } else if (levelNumber >= 3) {
                     // Level 3+: 30% total drop rate (15% buff, 15% debuff)
                     double roll = random.nextDouble();
                     if (roll < 0.15) {
-                        drop = new WidePaddleEffect(70); 
+                        drop = new WidePaddleEffect(70);
                     } else if (roll < 0.30) {
                         drop = new ShrinkPaddleEffect(70);
                     }
@@ -127,12 +128,12 @@ public class PlayScreen implements GameState {
         for (int i = pickups.size() - 1; i >= 0; i--) {
             Pickup p = pickups.get(i);
             p.update(dt);
-            
+
             // Check collision with paddle
             if (p.getBounds().intersects(paddle.getBounds())) {
                 Effect newEffect = p.getEffect();
                 boolean alreadyActive = false;
-                
+
                 // Check if we already have this effect running
                 for (Effect active : activeEffects) {
                     if (active.getName().equals(newEffect.getName())) {
@@ -141,13 +142,13 @@ public class PlayScreen implements GameState {
                         break;
                     }
                 }
-                
+
                 // If it's not already active, apply it and add to list
                 if (!alreadyActive) {
                     newEffect.apply(paddle);
                     activeEffects.add(newEffect);
                 }
-                
+
                 AudioManager.play(SoundId.PICKUP);
                 pickups.remove(i);
             }
@@ -174,7 +175,7 @@ public class PlayScreen implements GameState {
                 // Pick a random Y height within the paddle's movable area
                 // We subtract 20 so the laser doesn't clip outside the bounds
                 double spawnY = GameField.PADDLE_MIN_Y + random.nextDouble() * (GameField.PADDLE_MAX_Y - GameField.PADDLE_MIN_Y - 20);
-                
+
                 lasers.add(new Laser(spawnY));
                 laserSpawnTimer = 2.0 + random.nextDouble() * 2.0; // Spawns every 2 to 4 seconds
             }
@@ -187,7 +188,7 @@ public class PlayScreen implements GameState {
                 // Pick a random X position within the playable walls
                 // We subtract 20 so it doesn't clip outside the right wall
                 double spawnX = GameField.LEFT + random.nextDouble() * (GameField.RIGHT - GameField.LEFT - 20);
-                
+
                 vLasers.add(new VerticalLaser(spawnX));
                 vLaserSpawnTimer = 3.0 + random.nextDouble() * 2.0; // Spawns every 3 to 5 seconds
             }
@@ -197,14 +198,14 @@ public class PlayScreen implements GameState {
         for (int i = lasers.size() - 1; i >= 0; i--) {
             Laser l = lasers.get(i);
             l.update(dt);
-            
+
             if (l.isFinished()) {
                 lasers.remove(i);
             } else if (l.isActive() && l.getBounds().intersects(paddle.getBounds())) {
                 // If the paddle touches the active white laser, remove the laser and lose a life
                 lasers.remove(i);
                 loseLife();
-                break; 
+                break;
             }
         }
 
@@ -212,13 +213,13 @@ public class PlayScreen implements GameState {
         for (int i = vLasers.size() - 1; i >= 0; i--) {
             VerticalLaser vl = vLasers.get(i);
             vl.update(dt);
-            
+
             if (vl.isFinished()) {
                 vLasers.remove(i);
             } else if (vl.isActive() && vl.getBounds().intersects(paddle.getBounds())) {
                 vLasers.remove(i);
                 loseLife();
-                break; 
+                break;
             }
         }
 
@@ -229,14 +230,14 @@ public class PlayScreen implements GameState {
 
         // --- LEVEL UP LOGIC ---
         if (bricks.isEmpty()) {
-            levelNumber++;
-            if (levelNumber > 3) {
-                levelNumber = 1; // Loop back to level 1 if they beat level 3
-            }
-            lives = 3; // Give lives back on level up
-            enter();   // Load the next level
+            finished = true;
+            cntx.changeState(new ResultScreen(cntx, levelNumber, score, true));
+            return;
         }
     }
+
+    int getScore() { return score; }
+    int getLevelNumber() { return levelNumber; }
 
     void resume() {
         resumingFromPause = true;
@@ -246,22 +247,14 @@ public class PlayScreen implements GameState {
     private void loseLife() {
         AudioManager.play(SoundId.LIFE_LOST);
         lives--;
-        
+
         if (lives <= 0) {
-            // True Game Over: Save score and reload
-            if (score > 0) {
-                scoreRepo.saveScore(new ScoreEntry(score));
-                highScore = scoreRepo.getHighScore(); // Refresh high score
-            }
-            
-            levelNumber = 1;
-            lives = 3;
-            score = 0; // Reset the score for the next run
-            enter(); 
+            finished = true;
+            cntx.changeState(new ResultScreen(cntx, levelNumber, score, false));
         } else {
             // Just lost a life, but still have lives left: Keep bricks!
             ball = new Ball();
-            paddle = new Paddle(); 
+            paddle = new Paddle();
             pickups.clear();
             lasers.clear(); // Clear lasers so you don't instantly die again
             vLasers.clear();
@@ -278,16 +271,16 @@ public class PlayScreen implements GameState {
         //here you should add like level no, no. of lives, score, buffs, debuffs etc
         for(Brick b : bricks)
             b.draw(g);
-        
+
         for(Pickup p : pickups)
             p.draw(g);
-            
+
         for(Laser l : lasers)
             l.draw(g);
-            
+
         for(VerticalLaser vl : vLasers)
             vl.draw(g);
-            
+
         paddle.draw(g);
         ball.draw(g);
 
@@ -306,13 +299,13 @@ public class PlayScreen implements GameState {
         g.setColor(Color.WHITE);
         g.drawString("LEVEL: " + levelNumber, hudX, hudY);
         g.drawString("LIVES: " + lives, hudX, hudY + 25);
-        
+
         g.setColor(Color.YELLOW); // Make score stand out
         g.drawString("SCORE: " + score, hudX, hudY + 50);
-        
+
         g.setColor(Color.CYAN); // Make high score stand out
         g.drawString("HIGH:  " + highScore, hudX, hudY + 75);
-        
+
         // Shift the effect HUD down so it doesn't overlap the stats
         hudY += 120;
 
