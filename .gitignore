@@ -29,3 +29,12 @@ bin/
 ### Mac OS ###
 .DS_Store
 *.class
+
+
+# Database
+*.db
+
+# IDE files
+.idea/
+*.iml
+bin/

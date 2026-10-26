@@ -8,6 +8,9 @@ import effects.Effect;
 import effects.buffs.WidePaddleEffect;
 import effects.debuffs.ShrinkPaddleEffect;
 import levels.Level;
+import persistence.ScoreRepository;
+import persistence.ScoreEntry;
+import persistence.SqliteScoreRepository;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -33,10 +36,19 @@ public class PlayScreen implements GameState {
     private int lives = 3;
     private int levelNumber = 1;
     private boolean resumingFromPause;
+    
+    // --- SCORING FIELDS ---
+    private int score = 0;
+    private int highScore = 0;
+    private final ScoreRepository scoreRepo;
 
     public PlayScreen(GameContext cntx, int startingLevel) {
         this.cntx = cntx;
         this.levelNumber = startingLevel;
+        
+        // Initialize database and fetch current high score
+        this.scoreRepo = new SqliteScoreRepository();
+        this.highScore = scoreRepo.getHighScore();
     }
 
     @Override
@@ -82,6 +94,9 @@ public class PlayScreen implements GameState {
             Brick broken = CollisionSystem.resolve(ball, paddle, bricks);
             
             if(broken != null) {
+                // Add points for the broken brick
+                score += broken.getPoints();
+                
                 Effect drop = null;
                 
                 if (levelNumber == 2) {
@@ -233,9 +248,15 @@ public class PlayScreen implements GameState {
         lives--;
         
         if (lives <= 0) {
-            // True Game Over: Reset to Level 1 and reload everything
+            // True Game Over: Save score and reload
+            if (score > 0) {
+                scoreRepo.saveScore(new ScoreEntry(score));
+                highScore = scoreRepo.getHighScore(); // Refresh high score
+            }
+            
             levelNumber = 1;
             lives = 3;
+            score = 0; // Reset the score for the next run
             enter(); 
         } else {
             // Just lost a life, but still have lives left: Keep bricks!
@@ -281,13 +302,19 @@ public class PlayScreen implements GameState {
 
         g.setFont(new Font("Arial", Font.BOLD, 14));
 
-        // Draw Level and Lives info
+        // Draw Level, Lives, and Score info
         g.setColor(Color.WHITE);
         g.drawString("LEVEL: " + levelNumber, hudX, hudY);
         g.drawString("LIVES: " + lives, hudX, hudY + 25);
         
-        // Shift the effect HUD down so it doesn't overlap the level/lives
-        hudY += 70;
+        g.setColor(Color.YELLOW); // Make score stand out
+        g.drawString("SCORE: " + score, hudX, hudY + 50);
+        
+        g.setColor(Color.CYAN); // Make high score stand out
+        g.drawString("HIGH:  " + highScore, hudX, hudY + 75);
+        
+        // Shift the effect HUD down so it doesn't overlap the stats
+        hudY += 120;
 
         for (Effect effect : activeEffects) {
             // Determine color based on effect type
