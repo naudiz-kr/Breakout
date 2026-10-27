@@ -25,7 +25,17 @@ public class ResultScreen implements GameState {
     private boolean canSave() { return !saved && score > 0; }
     private boolean hasNext() { return won && level < 3; }
 
-    @Override public void enter() { }
+    private boolean hasPrompted = false;
+
+    @Override public void enter() {
+        // Auto-prompt for name if there is a score and we haven't prompted yet
+        if (canSave() && !hasPrompted) {
+            hasPrompted = true;
+            cntx.changeState(new NameEntryScreen(cntx, level, score,
+                    () -> { saved = true; cntx.changeState(this); },
+                    () -> cntx.changeState(this)));
+        }
+    }
     @Override public void exit() { }
 
     @Override
