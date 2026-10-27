@@ -6,28 +6,25 @@ import java.awt.Graphics2D;
 
 public class Laser extends Entity {
     private double warningTimer = 1.0; // 1 second of red warning
-    private double activeTimer = 0.5;  // Laser stays white for 0.5 seconds
+    private double activeTimer = 0.5;  // stays white for 0.5 seconds
     private boolean isActive = false;
 
-    public Laser(double y) {
-        // Spans horizontally from wall to wall, 20px tall
-        super(GameField.LEFT, y, GameField.RIGHT - GameField.LEFT, 20);
+    private Laser(double x, double y, double width, double height) {
+        super(x, y, width, height);
+    }
+
+    /** Beam spanning wall to wall at the given height, 20px tall. */
+    public static Laser horizontal(double y) {
+        return new Laser(GameField.LEFT, y, GameField.RIGHT - GameField.LEFT, 20);
+    }
+
+    /** Beam spanning top to bottom at the given x, 20px wide. */
+    public static Laser vertical(double x) {
+        return new Laser(x, GameField.TOP, 20, GameField.HEIGHT - GameField.TOP);
     }
 
     public boolean isActive() {
         return isActive;
-    }
-
-    @Override
-    public void update(double dt) {
-        if (!isActive) {
-            warningTimer -= dt;
-            if (warningTimer <= 0) {
-                isActive = true;
-            }
-        } else {
-            activeTimer -= dt;
-        }
     }
 
     public boolean isFinished() {
@@ -35,16 +32,23 @@ public class Laser extends Entity {
     }
 
     @Override
+    public void update(double dt) {
+        if (!isActive) {
+            warningTimer -= dt;
+            if (warningTimer <= 0) isActive = true;
+        } else {
+            activeTimer -= dt;
+        }
+    }
+
+    @Override
     public void draw(Graphics2D g) {
         if (!isActive) {
-            // Warning phase: Semi-transparent Red
             g.setColor(new Color(255, 0, 0, 120));
             g.fillRect((int) x, (int) y, (int) width, (int) height);
-            
             g.setColor(Color.RED);
             g.drawRect((int) x, (int) y, (int) width, (int) height);
         } else {
-            // Active phase: Solid White
             g.setColor(Color.WHITE);
             g.fillRect((int) x, (int) y, (int) width, (int) height);
         }
